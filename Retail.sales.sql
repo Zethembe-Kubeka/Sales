@@ -244,3 +244,28 @@ SELECT `Transaction ID`,
         `Date`,
         TO_CHAR(`Date`, 'yyyy-MM-dd') AS formatted_payment_date
 FROM retail.sales.dateset;
+
+--Duplicates--
+SELECT `Customer ID`, 
+        `Date`, 
+COUNT(*) AS occurrences
+FROM retail.sales.dateset
+GROUP BY `Customer ID`, `Date`
+HAVING COUNT(*) > 1;
+
+SELECT `Transaction ID`,
+       `Customer ID`,
+       `Price per Unit`,
+        `Quantity`,
+      `Price per Unit` * `Quantity` AS total_amount
+FROM retail.sales.dateset;
+
+SELECT `Product Category`,
+       SUM(`Quantity`) AS total_units_sold
+FROM retail.sales.dateset
+GROUP BY `Product Category`
+ORDER BY total_units_sold DESC;
+
+SELECT *
+FROM retail.sales.dateset
+LIMIT 10;
