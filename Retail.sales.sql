@@ -268,10 +268,46 @@ GROUP BY `Date`
 ORDER BY `Date`;
 
 SELECT `Product Category`,
+       SUM(`Quantity`) AS total_units_sold,
+       SUM(`Price per Unit` * `Quantity`) AS total_revenue
+FROM retail.sales.dateset
+GROUP BY `Product Category`
+ORDER BY total_revenue DESC;
+
+SELECT `Product Category`,
        SUM(`Quantity`) AS total_units_sold
 FROM retail.sales.dateset
 GROUP BY `Product Category`
 ORDER BY total_units_sold DESC;
+
+SELECT DATE_TRUNC('MONTH', `Date`) AS month,
+       SUM(`Quantity`) AS total_units_sold,
+       SUM(`Price per Unit` * `Quantity`) AS total_revenue
+FROM retail.sales.dateset
+GROUP BY DATE_TRUNC('MONTH', `Date`)
+ORDER BY month;
+
+SELECT DAYNAME(`Date`) AS day_name,
+       dayofweek(`Date`) AS day_num,
+       CASE
+           WHEN dayofweek(`Date`) IN (1, 7) THEN 'Weekend'
+           ELSE 'Weekday'
+       END AS day_type,
+       SUM(`Quantity`) AS total_units_sold,
+       SUM(`Price per Unit` * `Quantity`) AS total_revenue
+FROM retail.sales.dateset
+GROUP BY DAYNAME(`Date`), dayofweek(`Date`)
+ORDER BY day_num;
+
+SELECT `Customer ID`,
+       COUNT(`Transaction ID`) AS total_transactions,
+       SUM(`Quantity`) AS total_units_sold,
+       SUM(`Price per Unit` * `Quantity`) AS total_revenue,
+       ROUND(SUM(`Price per Unit` * `Quantity`) / COUNT(`Transaction ID`), 2) AS avg_transaction_value
+FROM retail.sales.dateset
+GROUP BY `Customer ID`
+ORDER BY total_revenue DESC
+LIMIT 20;
 
 SELECT *
 FROM retail.sales.dateset
