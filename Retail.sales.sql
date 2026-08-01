@@ -260,6 +260,13 @@ SELECT `Transaction ID`,
       `Price per Unit` * `Quantity` AS total_amount
 FROM retail.sales.dateset;
 
+SELECT `Date`,
+       SUM(`Quantity`) AS total_units_sold,
+       SUM(`Price per Unit` * `Quantity`) AS total_revenue
+FROM retail.sales.dateset
+GROUP BY `Date`
+ORDER BY `Date`;
+
 SELECT `Product Category`,
        SUM(`Quantity`) AS total_units_sold
 FROM retail.sales.dateset
