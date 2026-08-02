@@ -1,0 +1,880 @@
+{
+  "datasets": [
+    {
+      "name": "ed24724d",
+      "displayName": "Parameter Input Dataset",
+      "queryLines": [
+        " :parameter "
+      ],
+      "parameters": [
+        {
+          "displayName": "parameter",
+          "keyword": "parameter",
+          "dataType": "STRING",
+          "defaultSelection": {}
+        }
+      ]
+    },
+    {
+      "name": "194508d9",
+      "displayName": "retail_sales_dataset",
+      "config": {
+        "version": "1.1",
+        "source": "retail.`retail-sales`.retail_sales_dataset",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          },
+          {
+            "name": "Day Type",
+            "expr": "CASE WHEN DAYOFWEEK(Date) IN (1, 7) THEN 'Weekend' ELSE 'Weekday' END"
+          },
+          {
+            "name": "Day Name",
+            "expr": "DATE_FORMAT(Date, 'EEEE')"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "8629b04b",
+      "displayName": "Retail-sales",
+      "layout": [
+        {
+          "widget": {
+            "name": "revenue_by_product_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Product Category",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Revenue by Product Type",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Product Category",
+                  "displayName": "Product Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Total Amount)",
+                  "displayName": "Total Revenue",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Product Category",
+                  "displayName": "Product Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "revenue_by_product_pivot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Product Category",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "name": "Gender",
+                      "expression": "`Gender`"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "Product Category"
+                        ]
+                      },
+                      {
+                        "fieldNames": [
+                          "Gender"
+                        ]
+                      }
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "direction": "ASC",
+                      "expression": "`Gender`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Revenue by Product Type (Pivot)",
+                "showTitle": true
+              },
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": [
+                  {
+                    "fieldName": "Product Category"
+                  }
+                ],
+                "columns": [
+                  {
+                    "fieldName": "Gender"
+                  }
+                ],
+                "cell": {
+                  "type": "single-cell",
+                  "fieldName": "sum(Total Amount)",
+                  "cellType": "text"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "sales_trend_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "monthly(Date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Date`)"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Sales Trend by Month",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(Date)",
+                  "displayName": "Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Total Amount)",
+                  "displayName": "Total Sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "sales_trend_pivot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "monthly(Date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Date`)"
+                    },
+                    {
+                      "name": "Product Category",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "monthly(Date)"
+                        ]
+                      },
+                      {
+                        "fieldNames": [
+                          "Product Category"
+                        ]
+                      }
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Date`)"
+                    },
+                    {
+                      "direction": "ASC",
+                      "expression": "`Product Category`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Sales by Month (Pivot)",
+                "showTitle": true
+              },
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": [
+                  {
+                    "fieldName": "monthly(Date)"
+                  }
+                ],
+                "columns": [
+                  {
+                    "fieldName": "Product Category"
+                  }
+                ],
+                "cell": {
+                  "type": "single-cell",
+                  "fieldName": "sum(Total Amount)",
+                  "cellType": "text"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "units_by_dayofweek_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Day Name",
+                      "expression": "`Day Name`"
+                    },
+                    {
+                      "name": "sum(Quantity)",
+                      "expression": "SUM(`Quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Units Sold by Day of Week",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Day Name",
+                  "displayName": "Day of Week",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Quantity)",
+                  "displayName": "Total Units",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Day Name",
+                  "displayName": "Day of Week",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "units_by_dayofweek_pivot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Day Name",
+                      "expression": "`Day Name`"
+                    },
+                    {
+                      "name": "Product Category",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "name": "sum(Quantity)",
+                      "expression": "SUM(`Quantity`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "Day Name"
+                        ]
+                      },
+                      {
+                        "fieldNames": [
+                          "Product Category"
+                        ]
+                      }
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "`Day Name`"
+                    },
+                    {
+                      "direction": "ASC",
+                      "expression": "`Product Category`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 4,
+              "frame": {
+                "title": "Units by Day of Week (Pivot)",
+                "showTitle": true
+              },
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": {
+                  "fields": [
+                    {
+                      "fieldName": "Day Name",
+                      "scale": {
+                        "type": "categorical"
+                      }
+                    }
+                  ]
+                },
+                "columns": {
+                  "fields": [
+                    {
+                      "fieldName": "Product Category",
+                      "scale": {
+                        "type": "categorical"
+                      }
+                    }
+                  ]
+                },
+                "cells": {
+                  "fields": [
+                    {
+                      "fieldName": "sum(Quantity)",
+                      "cellType": "text"
+                    }
+                  ],
+                  "displayAs": "rows"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "weekday_weekend_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Day Type",
+                      "expression": "`Day Type`"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Weekday vs Weekend Sales",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Day Type",
+                  "displayName": "Day Type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Total Amount)",
+                  "displayName": "Total Sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Day Type",
+                  "displayName": "Day Type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "weekday_weekend_pivot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "Day Type",
+                      "expression": "`Day Type`"
+                    },
+                    {
+                      "name": "Product Category",
+                      "expression": "`Product Category`"
+                    },
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "Day Type"
+                        ]
+                      },
+                      {
+                        "fieldNames": [
+                          "Product Category"
+                        ]
+                      }
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "`Day Type`"
+                    },
+                    {
+                      "direction": "ASC",
+                      "expression": "`Product Category`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Weekday vs Weekend Split (Pivot)",
+                "showTitle": true
+              },
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": [
+                  {
+                    "fieldName": "Day Type"
+                  }
+                ],
+                "columns": [
+                  {
+                    "fieldName": "Product Category"
+                  }
+                ],
+                "cell": {
+                  "type": "single-cell",
+                  "fieldName": "sum(Total Amount)",
+                  "cellType": "text"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_revenue",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "sum(Total Amount)",
+                      "expression": "SUM(`Total Amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Revenue",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Total Amount)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_transactions",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "count(Transaction ID)",
+                      "expression": "COUNT(`Transaction ID`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Transactions",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(Transaction ID)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_units",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "sum(Quantity)",
+                      "expression": "SUM(`Quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Units Sold",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Quantity)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_avg_transaction",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "194508d9",
+                  "fields": [
+                    {
+                      "name": "avg(Total Amount)",
+                      "expression": "AVG(`Total Amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Transaction Value",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(Total Amount)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#000000"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#000000"
+      },
+      "widgetBorderColor": {
+        "light": "#000000",
+        "dark": "#EB00FF"
+      },
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#FF00F5"
+      },
+      "selectionColor": {
+        "light": "#FF00FF",
+        "dark": "#FFFFFF"
+      },
+      "visualizationColors": [
+        "#EE7733",
+        "#0077BB",
+        "#33BBEE",
+        "#EE3377",
+        "#CC3311",
+        "#009988",
+        "#BBBBBB"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "fontSettings": {
+        "base": {
+          "fontColor": {
+            "light": "#000000",
+            "dark": "#FF00F5"
+          }
+        }
+      }
+    },
+    "applyModeEnabled": false
+  }
+}
